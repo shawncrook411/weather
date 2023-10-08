@@ -8,9 +8,10 @@ var cityData = {
 var ForeCast = []
 var currentDay = dayjs()
 var historyLength = localStorage.getItem('history')
-if (historyLength === 0)
+if (!historyLength)
 {
-    historyLength++
+    historyLength = 0
+    localStorage.setItem("history", historyLength)
 }
 
 if (!city)
@@ -27,21 +28,19 @@ var submitCity = function(){
         console.log("Nothing in search bar")
         return
     }
+    else if (testCity === city)
+    {
+        console.log("Won't rerun the same info")
+        return
+    }
     else
     {
         city = testCity.toUpperCase()
         localStorage.setItem("city", city)
-        localStorage.setItem("city" + historyLength, city)   
-        addHistory()
+        localStorage.setItem("city" +(historyLength + 1), city)   
         fetchCity(city)      
          
     } 
-    displayHistory() 
-}
-
-var addHistory = function (){
-    historyLength++
-    localStorage.setItem("history", historyLength)
 }
 
 var fetchCity = function (city)
@@ -105,7 +104,7 @@ $('#search').on('click', submitCity)
 //function to create tabs of cities
 var displayHistory = function () {
     cities = []
-    for (let i = 1; i < historyLength; i++)
+    for (let i = 1; i <= historyLength; i++)
     {
         addCity = localStorage.getItem("city" + i)
         if(addCity)
@@ -174,7 +173,9 @@ var displayData = function (){
         }
         localContainer.append(card)
     }
-    
+    historyLength++
+    localStorage.setItem("history", historyLength)
+    displayHistory()
 }
 
 displayHistory()
