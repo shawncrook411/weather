@@ -5,23 +5,9 @@ var cityData = {
     wind : '',
     humidity : ''
 }
+var ForeCast = []
 var currentDay = dayjs()
 
-var displayConditions = function (data) {
-    possible = ['Clear', 'Clouds', '', '', '']
-    output = ['', '', '', '', '']
-    for (let i = 0; i < possible.length; i++)
-    { 
-        if (data.condition === possible[i])
-        {           
-            return output[i]
-        }
-    }
-    return
-} 
-
-
-var 
 //function to search for a city
 var submitCity = function(){
     
@@ -34,7 +20,8 @@ var submitCity = function(){
     else
     {
         city = testCity   
-        fetchCity(city)         
+        fetchCity(city)       
+        fetchForecast(city)  
     }  
 }
 
@@ -43,7 +30,6 @@ var fetchCity = function (city)
     var requestURL = 'https://api.openweathermap.org/data/2.5/weather?units=imperial&'
     APIkey = '7a1c0f59db2734e48900294d04c1e540'
     localURL = requestURL + 'q=' + city + '&appid=' + APIkey
-    console.log(localURL)
     fetch(localURL)
         .then(function (response) 
         {
@@ -51,21 +37,49 @@ var fetchCity = function (city)
         })
         .then(function (data) 
         {
-            console.log(data)
             cityData.temp = data.main.temp
-            cityData.condition = data.weather[0].main
+            cityData.condition = 'https://openweathermap.org/img/wn/' + data.weather[0].icon + '@2x.png'
             cityData.humidity = data.main.humidity
             cityData.wind = data.wind.speed
-            console.log(cityData)
             displayData()
+        })        
+}
+
+var fetchForecast = function (city)
+{
+    ForeCast = []
+    var requestURL = 'https://api.openweathermap.org/data/2.5/forecast?units=imperial&'
+    APIkey = '7a1c0f59db2734e48900294d04c1e540'
+    localURL = requestURL + 'q=' + city + '&appid=' + APIkey
+    fetch(localURL)
+        .then(function (response) 
+        {
+            return response.json();
         })
-        
+        .then(function (data) 
+        {
+            for (let i = 1; i <= 5; i++)
+            {
+                forecastDate = ((i*8)-1) 
+                localData = {}
+                list = data.list[forecastDate]
+                console.log(list)     
+                localData.temp = list.main.temp
+                localData.condition = 'https://openweathermap.org/img/wn/' + list.weather[0].icon + '@2x.png'
+                localData.humidity = list.main.humidity
+                localData.wind = list.wind.speed
+                ForeCast.push(localData)                
+            }
+            console.log(ForeCast)
+            displayData()
+        })        
 }
 
 var submitCommonCity = function(event){
     target = event.target
     city = target.textContent
     fetchCity(city)
+    fetchForecast(city) 
 }
 
 $('#search').on('click', submitCity)
@@ -87,7 +101,21 @@ for (let i = 0; i < 8; i++)
 
 var displayData = function (){
 
-    localContainer = $('#card-container')
+    image = $('<img>')
+    image.attr('src', cityData.condition)
+
+    
+    localContainer = $('#city-data')
+    localContainer.children().eq(0).text('City: ' + city + ' (' + currentDay.format('MMM D, YYYY') + ')')
+    localContainer.children().eq(0).append(image)
+    localContainer.children().eq(1).text('Temp: ' + cityData.temp + ' °F')
+    localContainer.children().eq(2).text('Wind: ' + cityData.wind + ' MPH')
+    localContainer.children().eq(3).text('Humidity: ' + cityData.humidity + ' %')
+    
+    localContainer = $('#card-container')    
+    children = localContainer.children()
+    children.remove()
+
     for(let i = 0; i < 5; i++)
     {
         card = $('<div>')
@@ -96,14 +124,19 @@ var displayData = function (){
         for(let j = 0; j < 5; j++)
         {     
             localDay = currentDay.add((i+1), 'day').format('MMM D, YYYY')
-            cardData = [localDay, '', 'Temp: ', 'Wind: ', 'Humidity: ' ]
-            cardData[1] = 'image'
-            cardData[2] += 0 + ' °F'
-            cardData[3] += 0 + ' MPH'
-            cardData[4] += 0 + ' %'
-            div = $('<div>')
-            div.text(cardData[j])
-            div.addClass('card-data')
+            cardData = [localDay, '', 'Temp: ' + ForeCast[i].temp + ' °F', 'Wind: ' + ForeCast[i].wind + ' MPH', 'Humidity:' + ForeCast[i].humidity + ' %' ]
+            
+            if (j === 1)
+            {
+                div = $('<img>')
+                div.attr('src', ForeCast[i].condition)
+            }
+            else
+            {
+                div = $('<div>')
+                div.addClass('card-data')
+                div.text(cardData[j])
+            }
             if(j === 0)
             {
                 div.attr("style", "font-weight: bold")
@@ -112,14 +145,5 @@ var displayData = function (){
         }
         localContainer.append(card)
     }
-
-    localContainer = $('#city-data')
-    localContainer.children().eq(0).text('City: ' + city + ' (' + currentDay.format('MMM D, YYYY') + ')' + ' image')
-    localContainer.children().eq(1).text('Temp: ' + cityData.temp + ' °F')
-    localContainer.children().eq(2).text('Wind: ' + cityData.wind + ' MPH')
-    localContainer.children().eq(3).text('Humidity: ' + cityData.humidity + ' %')
-
 }
-
-displayData()
 //funtion to create 5 cards based on 5 day forecast
