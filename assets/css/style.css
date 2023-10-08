@@ -1,0 +1,56 @@
+body {
+    background:rgb(0, 140, 255);
+}
+
+*{
+    color: black;
+}
+
+nav{
+    display:flex;
+    justify-content: center;
+}
+
+main{
+    display:flex;
+}
+
+aside{
+    padding: 5px;
+    min-width: 250px;
+    height: 80vh;
+    border: white solid 3px;
+    display: flex;
+    justify-content: center;
+
+}
+
+#main-div{
+    flex: 5 1 500px;
+    border: white solid 3px;
+    display: flex;
+    flex-flow: column;
+
+}
+
+#search-container{    
+    border-bottom: gray solid 1px;
+    padding: 5px;
+}
+
+#city-data{
+    border: yellow solid 3px;
+    height: 25vh;
+    margin: 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+#forecast{
+    border: yellow solid 3px;
+    margin: 15px;
+    flex-grow: 1;
+
+
+}
