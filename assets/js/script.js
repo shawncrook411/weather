@@ -15,7 +15,7 @@ if (historyLength === 0)
 
 if (!city)
 {
-    city = 'Salt Lake City'
+    city = 'SALT LAKE CITY'
 }
 
 //function to search for a city
@@ -24,12 +24,12 @@ var submitCity = function(){
     testCity = $('#search-bar').val()
     if ('' === testCity) //checks if search-bar has data
     {
-        console.log("nothing in search bar")
+        console.log("Nothing in search bar")
         return
     }
     else
     {
-        city = testCity
+        city = testCity.toUpperCase()
         localStorage.setItem("city", city)
         localStorage.setItem("city" + historyLength, city)   
         addHistory()
