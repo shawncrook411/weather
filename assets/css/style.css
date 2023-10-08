@@ -21,8 +21,8 @@ aside{
     height: 80vh;
     border: white solid 3px;
     display: flex;
-    justify-content: center;
-
+    justify-content: flex-start;
+    flex-direction: column;
 }
 
 #main-div{
@@ -36,6 +36,10 @@ aside{
 #search-container{    
     border-bottom: gray solid 1px;
     padding: 5px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    padding-bottom: 5px;
 }
 
 #city-data{
@@ -51,6 +55,38 @@ aside{
     border: yellow solid 3px;
     margin: 15px;
     flex-grow: 1;
+}
 
+#common-cities{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
+.cities-boxes{
+    background-color: gray;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    text-align: center;
+    width: 100px;
+    margin-bottom: 25px;
+}
+
+.cities-boxes:hover{
+    cursor:pointer;
+}
+
+#card-container{
+    display:flex;
+    flex-direction: row;;
+}
+
+.card{
+    margin: 20px;
+    border: white solid 2px;
+}
+
+.card-data{
+    color:white;
 }
