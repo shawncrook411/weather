@@ -1,4 +1,4 @@
-var city = "Fairbanks"; //Default place holder
+var city =  localStorage.getItem("city") //Default place holder
 var cityData = {
     condition : '',
     temp : '',
@@ -7,6 +7,16 @@ var cityData = {
 }
 var ForeCast = []
 var currentDay = dayjs()
+var historyLength = localStorage.getItem('history')
+if (historyLength === 0)
+{
+    historyLength++
+}
+
+if (!city)
+{
+    city = 'Salt Lake City'
+}
 
 //function to search for a city
 var submitCity = function(){
@@ -19,10 +29,19 @@ var submitCity = function(){
     }
     else
     {
-        city = testCity   
-        fetchCity(city)       
-        fetchForecast(city)  
-    }  
+        city = testCity
+        localStorage.setItem("city", city)
+        localStorage.setItem("city" + historyLength, city)   
+        addHistory()
+        fetchCity(city)      
+         
+    } 
+    displayHistory() 
+}
+
+var addHistory = function (){
+    historyLength++
+    localStorage.setItem("history", historyLength)
 }
 
 var fetchCity = function (city)
@@ -41,7 +60,7 @@ var fetchCity = function (city)
             cityData.condition = 'https://openweathermap.org/img/wn/' + data.weather[0].icon + '@2x.png'
             cityData.humidity = data.main.humidity
             cityData.wind = data.wind.speed
-            displayData()
+            fetchForecast(city) 
         })        
 }
 
@@ -70,7 +89,6 @@ var fetchForecast = function (city)
                 localData.wind = list.wind.speed
                 ForeCast.push(localData)                
             }
-            console.log(ForeCast)
             displayData()
         })        
 }
@@ -78,23 +96,34 @@ var fetchForecast = function (city)
 var submitCommonCity = function(event){
     target = event.target
     city = target.textContent
+    historyLength++
     fetchCity(city)
-    fetchForecast(city) 
 }
 
 $('#search').on('click', submitCity)
 
 //function to create tabs of cities
-
-cities = ['Atlanta', 'Denver', 'Seattle', 'San Francisco', 'Orlando', 'New York', 'Chicago', 'Austin']
-container = $('#common-cities')
-for (let i = 0; i < 8; i++)
-{
-    localDiv = $('<div>')
-    localDiv.text(cities[i])
-    localDiv.addClass('cities-boxes')
-    container.append(localDiv)
-    localDiv.on('click', submitCommonCity)
+var displayHistory = function () {
+    cities = []
+    for (let i = 1; i < historyLength; i++)
+    {
+        addCity = localStorage.getItem("city" + i)
+        if(addCity)
+        {
+            cities.push(addCity)
+        }
+    }
+    container = $('#common-cities')
+    children = container.children()
+    children.remove()
+    for (let i = 0; i < cities.length; i++)
+    {
+        localDiv = $('<div>')
+        localDiv.text(cities[i])
+        localDiv.addClass('cities-boxes')
+        container.append(localDiv)
+        localDiv.on('click', submitCommonCity)
+    }
 }
 
 //function to display data into the current city conditions
@@ -145,5 +174,7 @@ var displayData = function (){
         }
         localContainer.append(card)
     }
+    
 }
-//funtion to create 5 cards based on 5 day forecast
+
+displayHistory()
