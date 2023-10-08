@@ -85,8 +85,16 @@ aside{
 .card{
     margin: 20px;
     border: white solid 2px;
+    width: 200px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .card-data{
     color:white;
+    margin: 15px;
+    font-size: 20px;
+    
 }
